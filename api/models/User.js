@@ -3,10 +3,13 @@ const Counter = require('./Counter');
 
 const userSchema = new mongoose.Schema({
   idseq: { type: Number, unique: true },
-  username: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true },
   email: { type: String, required: true, unique: true },
+  mobile: { type: Number, required: true, unique: true},
   password: { type: String, required: true },
-  role: { type: String, enum: ['customer', 'admin'], default: 'customer' },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'Role', required: true },
+  wishlist: { type: mongoose.Schema.Types.ObjectId, ref: 'Wishlist' }, // Use Wishlist model
+  addresses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Address' }] // Use Address model
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {
