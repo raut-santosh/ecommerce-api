@@ -9,6 +9,15 @@ const paymentSchema = new mongoose.Schema({
   isPaid: { type: Boolean, default: false },
 },{timestamp: true});
 
+paymentSchema.pre('save', async function (next) {
+  const doc = this;
+  if (!doc.idseq) {
+    const nextId = await Counter.getNextSequence(doc.constructor.modelName);
+    doc.idseq = nextId;
+  }
+  next();
+});
+
 const Payment = mongoose.model('Payment', paymentSchema);
 
 module.exports = Payment;
