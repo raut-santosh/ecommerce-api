@@ -1,5 +1,7 @@
 const fileController = require('./controllers/fileController');
 const productController = require('./controllers/productController');
+const userController = require('./controllers/userController');
+const roleController = require('./controllers/roleController');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -34,5 +36,26 @@ module.exports = function (app) {
     app.get('/products/:productId', productController.getProductById);
 
     app.delete('/products/:productId', productController.deleteProduct);
+
+    // Route for creating a new user
+    app.post('/users', userController.createUser);
+
+    // Route for getting all users
+    app.get('/users', userController.getAllUsers);
+
+    // Route for getting a specific user by ID
+    app.get('/users/:userId', userController.getUserById);
+
+    // Route for updating a user by ID
+    app.put('/users/:userId', userController.updateUser);
+
+    // Route for deleting a user by ID
+    app.delete('/users/:userId', userController.deleteUser);
+
+    app.post('/roles', roleController.createRole);
+    app.get('/roles', roleController.getRoles);
+    app.get('/roles/:roleId', roleController.getRoleById);
+    app.put('/roles/:roleId', roleController.updateRole);
+    app.delete('/roles/:roleId', roleController.deleteRole);
 
 }

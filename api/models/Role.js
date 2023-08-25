@@ -3,7 +3,7 @@ const Counter = require('./Counter');
 
 const roleSchema = new mongoose.Schema({
     idseq: { type: Number, unique: true },
-    name: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
     permissions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Permission' }] // References to permission documents
 }, {timestamps: true});
 
