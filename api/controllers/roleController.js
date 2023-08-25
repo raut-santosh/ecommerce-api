@@ -2,10 +2,11 @@ const Role = require('../models/Role');
 const Permission = require('../models/Permission');
 
 exports.createRole = (req, res, next) => {
-  const { name, permissions } = req.body;
+  const { name, alias, permissions } = req.body;
 
   const role = new Role({
     name,
+    alias,
     permissions
   });
 
@@ -66,6 +67,7 @@ exports.updateRole = (req, res, next) => {
     roleId,
     {
       name,
+      alias,
       permissions
     },
     { new: true }
