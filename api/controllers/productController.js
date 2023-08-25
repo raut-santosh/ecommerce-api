@@ -1,29 +1,36 @@
 const Product = require('../models/Product');
 
 exports.createProduct = async (req, res, next) => {
-    try {
-      const { name, description, price, category, images, stock } = req.body;
-
-      const product = new Product({
-        name,
-        description,
-        price,
-        images, 
-        category,
-        stock
-      });
-
-      const savedProduct = await product.save();
-
+  try {
+    const { name, description, price, category, images, tags, stock } = req.body;
+    const product = new Product({
+      name,
+      description,
+      price,
+      images,
+      category,
+      tags,
+      stock
+    });
+    console.log(product);
+    
+    product.save().then((savedProduct) => { // Save the product and use the saved product in the callback
+      console.log('Creating Product');
       res.status(201).json({
         message: 'Product created successfully',
         product: savedProduct
       });
-    } catch (error) {
+    }).catch((error) => {
       res.status(500).json({
-        error: 'An error occurred while creating the product.'
+        error
       });
-    }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      error: 'An error occurred while creating the product.'
+    });
+  }
 };
 
 exports.getProductById = async (req, res, next) => {
@@ -56,9 +63,10 @@ exports.updateProduct = async (req, res, next) => {
         name,
         description,
         price,
+        images, 
         category,
-        stock,
-        images
+        tags,
+        stock
       },
       { new: true }
     );

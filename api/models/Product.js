@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema({
   price: { type: Number, required: true },
   images: [{ type: mongoose.Schema.Types.ObjectId, ref: 'File' }],
   category: { type: String, required: true },
+  tags: [{ type: String }],
   stock: { type: Number, required: true },
 }, { timestamps: true });
 
