@@ -2,6 +2,7 @@ const fileController = require('./controllers/fileController');
 const productController = require('./controllers/productController');
 const userController = require('./controllers/userController');
 const roleController = require('./controllers/roleController');
+const permissionsController = require('./controllers/permissionsController');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -57,5 +58,20 @@ module.exports = function (app) {
     app.get('/roles/:roleId', roleController.getRoleById);
     app.put('/roles/:roleId', roleController.updateRole);
     app.delete('/roles/:roleId', roleController.deleteRole);
+
+    // Route for creating a new permission
+    app.post('/permissions', permissionsController.createPermission);
+
+    // Route for getting all permissions
+    app.get('/permissions', permissionsController.getPermissions);
+
+    // Route for getting a specific permission by ID
+    app.get('/permissions/:permissionId', permissionsController.getPermissionById);
+
+    // Route for updating a permission by ID
+    app.patch('/permissions/:permissionId', permissionsController.updatePermission);
+
+    // Route for deleting a permission by ID
+    app.delete('/permissions/:permissionId', permissionsController.deletePermission);
 
 }
