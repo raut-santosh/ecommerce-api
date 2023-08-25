@@ -3,6 +3,7 @@ const productController = require('./controllers/productController');
 const userController = require('./controllers/userController');
 const roleController = require('./controllers/roleController');
 const permissionsController = require('./controllers/permissionsController');
+const orderController = require('./controllers/orderController');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -73,5 +74,20 @@ module.exports = function (app) {
 
     // Route for deleting a permission by ID
     app.delete('/permissions/:permissionId', permissionsController.deletePermission);
+
+    // Route for creating a new order
+    app.post('/orders', orderController.createOrder);
+
+    // Route for getting all orders
+    app.get('/orders', orderController.getAllOrders);
+
+    // Route for getting a specific order by ID
+    app.get('/orders/:orderId', orderController.getOrderById);
+
+    // Route for updating order status
+    app.patch('/orders/:orderId/status', orderController.updateOrderStatus);
+
+    // Route for deleting an order
+    app.delete('/orders/:orderId', orderController.deleteOrder);
 
 }
