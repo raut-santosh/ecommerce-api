@@ -32,4 +32,7 @@ module.exports = function (app) {
 
     // Route for getting a specific product by ID
     app.get('/products/:productId', productController.getProductById);
+
+    app.delete('/products/:productId', productController.deleteProduct);
+
 }
