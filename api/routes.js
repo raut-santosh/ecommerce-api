@@ -5,6 +5,8 @@ const roleController = require('./controllers/roleController');
 const permissionsController = require('./controllers/permissionsController');
 const orderController = require('./controllers/orderController');
 const reviewController = require('./controllers/reviewController');
+const authController = require('./controllers/authController');
+
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -25,6 +27,17 @@ module.exports = function (app) {
     app.get('/', (req, res, next) => {
         res.status(200).json({'msg':'hello world!'});
     });
+
+
+    app.post('/register', authController.register);
+
+    // Log in
+    app.post('/login', authController.login);
+    
+    // Refresh access token
+    
+    // Change password
+    app.post('/change-password', authController.changePassword);
 
     // Route for uploading files
     app.post('/upload/file', fileController.uploadFile);
