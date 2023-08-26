@@ -4,6 +4,7 @@ const userController = require('./controllers/userController');
 const roleController = require('./controllers/roleController');
 const permissionsController = require('./controllers/permissionsController');
 const orderController = require('./controllers/orderController');
+const reviewController = require('./controllers/reviewController');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -89,5 +90,20 @@ module.exports = function (app) {
 
     // Route for deleting an order
     app.delete('/orders/:orderId', orderController.deleteOrder);
+
+    // Create a new review
+    app.post('/reviews', reviewController.createReview);
+
+    // Get all reviews
+    app.get('/reviews', reviewController.getAllReviews);
+
+    // Get a specific review by ID
+    app.get('/reviews/:reviewId', reviewController.getReviewById);
+
+    // Update a review
+    app.put('/reviews/:reviewId', reviewController.updateReview);
+
+    // Delete a review
+    app.delete('/reviews/:reviewId', reviewController.deleteReview);
 
 }
