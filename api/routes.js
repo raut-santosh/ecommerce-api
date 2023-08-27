@@ -7,6 +7,7 @@ const orderController = require('./controllers/orderController');
 const reviewController = require('./controllers/reviewController');
 const authController = require('./controllers/authController');
 const authenticate = require('./middlewares/authentication');
+const mailer = require('./middlewares/mailer');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
