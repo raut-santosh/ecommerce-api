@@ -6,7 +6,7 @@ const permissionsController = require('./controllers/permissionsController');
 const orderController = require('./controllers/orderController');
 const reviewController = require('./controllers/reviewController');
 const authController = require('./controllers/authController');
-
+const authenticate = require('./middlewares/authentication');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -24,7 +24,7 @@ module.exports = function (app) {
     });
 
         // Default route
-    app.get('/', (req, res, next) => {
+    app.get('/', authenticate, (req, res, next) => {
         res.status(200).json({'msg':'hello world!'});
     });
 
@@ -37,7 +37,7 @@ module.exports = function (app) {
     // Refresh access token
     
     // Change password
-    app.post('/change-password', authController.changePassword);
+    app.post('/change-password/:userId', authenticate, authController.changePassword);
 
     // Route for uploading files
     app.post('/upload/file', fileController.uploadFile);
