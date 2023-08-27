@@ -24,7 +24,7 @@ module.exports = function (app) {
     });
 
         // Default route
-    app.get('/', authenticate, (req, res, next) => {
+    app.get('/', (req, res, next) => {
         res.status(200).json({'msg':'hello world!'});
     });
 
@@ -40,10 +40,10 @@ module.exports = function (app) {
     app.post('/change-password/:userId', authenticate, authController.changePassword);
 
     // Route for uploading files
-    app.post('/upload/file', fileController.uploadFile);
+    app.post('/upload/file', authenticate, fileController.uploadFile);
 
     // Route for creating a new product
-    app.post('/products', productController.createProduct);
+    app.post('/products', authenticate, productController.createProduct);
 
     // Route for getting all products
     app.get('/products', productController.getAllProducts);
@@ -51,61 +51,61 @@ module.exports = function (app) {
     // Route for getting a specific product by ID
     app.get('/products/:productId', productController.getProductById);
 
-    app.delete('/products/:productId', productController.deleteProduct);
+    app.delete('/products/:productId',authenticate, productController.deleteProduct);
 
     // Route for creating a new user
-    app.post('/users', userController.createUser);
+    app.post('/users',authenticate, userController.createUser);
 
     // Route for getting all users
-    app.get('/users', userController.getAllUsers);
+    app.get('/users', authenticate, userController.getAllUsers);
 
     // Route for getting a specific user by ID
     app.get('/users/:userId', userController.getUserById);
 
     // Route for updating a user by ID
-    app.put('/users/:userId', userController.updateUser);
+    app.put('/users/:userId', authenticate, userController.updateUser);
 
     // Route for deleting a user by ID
-    app.delete('/users/:userId', userController.deleteUser);
+    app.delete('/users/:userId', authenticate, userController.deleteUser);
 
     app.post('/roles', roleController.createRole);
     app.get('/roles', roleController.getRoles);
     app.get('/roles/:roleId', roleController.getRoleById);
-    app.put('/roles/:roleId', roleController.updateRole);
-    app.delete('/roles/:roleId', roleController.deleteRole);
+    app.put('/roles/:roleId', authenticate, roleController.updateRole);
+    app.delete('/roles/:roleId',authenticate, roleController.deleteRole);
 
     // Route for creating a new permission
-    app.post('/permissions', permissionsController.createPermission);
+    app.post('/permissions',authenticate, permissionsController.createPermission);
 
     // Route for getting all permissions
-    app.get('/permissions', permissionsController.getPermissions);
+    app.get('/permissions',authenticate, permissionsController.getPermissions);
 
     // Route for getting a specific permission by ID
-    app.get('/permissions/:permissionId', permissionsController.getPermissionById);
+    app.get('/permissions/:permissionId', authenticate, permissionsController.getPermissionById);
 
     // Route for updating a permission by ID
-    app.patch('/permissions/:permissionId', permissionsController.updatePermission);
+    app.patch('/permissions/:permissionId', authenticate, permissionsController.updatePermission);
 
     // Route for deleting a permission by ID
-    app.delete('/permissions/:permissionId', permissionsController.deletePermission);
+    app.delete('/permissions/:permissionId', authenticate, permissionsController.deletePermission);
 
     // Route for creating a new order
-    app.post('/orders', orderController.createOrder);
+    app.post('/orders', authenticate, orderController.createOrder);
 
     // Route for getting all orders
-    app.get('/orders', orderController.getAllOrders);
+    app.get('/orders', authenticate, orderController.getAllOrders);
 
     // Route for getting a specific order by ID
-    app.get('/orders/:orderId', orderController.getOrderById);
+    app.get('/orders/:orderId', authenticate, orderController.getOrderById);
 
     // Route for updating order status
-    app.patch('/orders/:orderId/status', orderController.updateOrderStatus);
+    app.patch('/orders/:orderId/status', authenticate, orderController.updateOrderStatus);
 
     // Route for deleting an order
     app.delete('/orders/:orderId', orderController.deleteOrder);
 
     // Create a new review
-    app.post('/reviews', reviewController.createReview);
+    app.post('/reviews', authenticate, reviewController.createReview);
 
     // Get all reviews
     app.get('/reviews', reviewController.getAllReviews);
@@ -114,9 +114,9 @@ module.exports = function (app) {
     app.get('/reviews/:reviewId', reviewController.getReviewById);
 
     // Update a review
-    app.put('/reviews/:reviewId', reviewController.updateReview);
+    app.put('/reviews/:reviewId', authenticate, reviewController.updateReview);
 
     // Delete a review
-    app.delete('/reviews/:reviewId', reviewController.deleteReview);
+    app.delete('/reviews/:reviewId', authenticate, reviewController.deleteReview);
 
 }
