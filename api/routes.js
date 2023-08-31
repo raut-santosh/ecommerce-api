@@ -44,21 +44,21 @@ module.exports = function (app) {
     app.post('/upload/file', authenticate, fileController.uploadFile);
 
     // Route for creating a new product
-    app.post('/products', authenticate, productController.createProduct);
+    app.post('/products/addedit', authenticate, productController.createProduct);
 
     // Route for getting all products
-    app.get('/products', productController.getAllProducts);
+    app.get('/products/list', productController.getAllProducts);
 
     // Route for getting a specific product by ID
-    app.get('/products/:productId', productController.getProductById);
+    app.get('/products/addedit/:productId', productController.getProductById);
 
-    app.delete('/products/:productId',authenticate, productController.deleteProduct);
+    app.delete('/products/delete/:productId',authenticate, productController.deleteProduct);
 
     // Route for creating a new user
-    app.post('/users',authenticate, userController.createUser);
+    app.post('/users/addedit',authenticate, userController.createUser);
 
     // Route for getting all users
-    app.get('/users', authenticate, userController.getAllUsers);
+    app.get('/users/list', authenticate, userController.getAllUsers);
 
     // Route for getting a specific user by ID
     app.get('/users/:userId', userController.getUserById);
@@ -69,17 +69,17 @@ module.exports = function (app) {
     // Route for deleting a user by ID
     app.delete('/users/:userId', authenticate, userController.deleteUser);
 
-    app.post('/roles', roleController.createRole);
-    app.get('/roles', roleController.getRoles);
+    app.post('/roles/addedit', roleController.createRole);
+    app.get('/roles/list', roleController.getRoles);
     app.get('/roles/:roleId', roleController.getRoleById);
     app.put('/roles/:roleId', authenticate, roleController.updateRole);
     app.delete('/roles/:roleId',authenticate, roleController.deleteRole);
 
     // Route for creating a new permission
-    app.post('/permissions',authenticate, permissionsController.createPermission);
+    app.post('/permissions/addedit',authenticate, permissionsController.createPermission);
 
     // Route for getting all permissions
-    app.get('/permissions',authenticate, permissionsController.getPermissions);
+    app.get('/permissions/list',authenticate, permissionsController.getPermissions);
 
     // Route for getting a specific permission by ID
     app.get('/permissions/:permissionId', authenticate, permissionsController.getPermissionById);
@@ -91,10 +91,10 @@ module.exports = function (app) {
     app.delete('/permissions/:permissionId', authenticate, permissionsController.deletePermission);
 
     // Route for creating a new order
-    app.post('/orders', authenticate, orderController.createOrder);
+    app.post('/orders/addedit', authenticate, orderController.createOrder);
 
     // Route for getting all orders
-    app.get('/orders', authenticate, orderController.getAllOrders);
+    app.get('/orders/list', authenticate, orderController.getAllOrders);
 
     // Route for getting a specific order by ID
     app.get('/orders/:orderId', authenticate, orderController.getOrderById);
@@ -106,10 +106,10 @@ module.exports = function (app) {
     app.delete('/orders/:orderId', orderController.deleteOrder);
 
     // Create a new review
-    app.post('/reviews', authenticate, reviewController.createReview);
+    app.post('/reviews/addedit', authenticate, reviewController.createReview);
 
     // Get all reviews
-    app.get('/reviews', reviewController.getAllReviews);
+    app.get('/reviews/list', reviewController.getAllReviews);
 
     // Get a specific review by ID
     app.get('/reviews/:reviewId', reviewController.getReviewById);

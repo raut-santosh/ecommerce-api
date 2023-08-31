@@ -114,7 +114,16 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.find();
+    const products = await Product.aggregate([
+      {
+        $lookup: {
+          from: "files",
+          localField: "images",
+          foreignField: "_id",
+          as: "images"
+        }
+      }
+    ]);
 
     res.status(200).json({
       products
