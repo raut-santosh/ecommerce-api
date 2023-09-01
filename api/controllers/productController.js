@@ -114,19 +114,19 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const products = await Product.aggregate([
-      {
-        $lookup: {
-          from: "files",
-          localField: "images",
-          foreignField: "_id",
-          as: "images"
-        }
-      }
+    const page = parseInt(req.query.page) || 1; // Parse the page parameter or default to 1
+    const limit = parseInt(req.query.limit) || 10; // Parse the limit parameter or default to 10
+
+    const skip = (page - 1) * limit; // Calculate the number of records to skip
+
+    const [products, totalCount] = await Promise.all([
+      Product.find().skip(skip).limit(limit).exec(),
+      Product.countDocuments().exec() // Count all documents to get the total count
     ]);
 
     res.status(200).json({
-      products
+      products,
+      totalCount
     });
   } catch (error) {
     res.status(500).json({
