@@ -111,26 +111,25 @@ exports.deleteProduct = async (req, res, next) => {
   }
 };
 
-
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const page = parseInt(req.query.page) || 1; // Parse the page parameter or default to 1
-    const limit = parseInt(req.query.limit) || 10; // Parse the limit parameter or default to 10
+    const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
 
-    const skip = (page - 1) * limit; // Calculate the number of records to skip
+    const skip = parseInt(offset) * parseInt(limit);
 
-    const [products, totalCount] = await Promise.all([
-      Product.find().skip(skip).limit(limit).exec(),
-      Product.countDocuments().exec() // Count all documents to get the total count
-    ]);
+    const data = await Product.find()
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 });
 
-    res.status(200).json({
-      products,
-      totalCount
-    });
+    const totalCount = await Product.countDocuments(); // Get the total count of documents in the collection
+
+    res.status(200).json({ data, totalCount });
   } catch (error) {
+    console.error('Error fetching products:', error);
     res.status(500).json({
-      error: 'An error occurred while fetching the products.'
+      error: 'An error occurred while fetching the products.',
     });
   }
 };
+
