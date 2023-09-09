@@ -25,18 +25,20 @@ exports.createPermission = (req, res, next) => {
     });
 };
 
-exports.getPermissions = (req, res, next) => {
-  Permission.find()
-    .then(permissions => {
-      res.status(200).json({
-        permissions
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while fetching the permissions.'
-      });
+exports.getPermissions = async (req, res, next) => {
+  try {
+
+    const list = await Permission.find().sort({ createdAt: -1 })
+
+    const totalCount = await Permission.countDocuments(); // Get the total count of documents in the collection
+
+    res.status(200).json({ list, totalCount });
+  } catch (error) {
+    console.error('Error fetching Permissions:', error);
+    res.status(500).json({
+      error: 'An error occurred while fetching the Roles.',
     });
+  }
 };
 
 exports.getPermissionById = (req, res, next) => {

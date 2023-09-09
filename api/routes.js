@@ -79,7 +79,7 @@ module.exports = function (app) {
     app.post('/permissions/addedit',authenticate, permissionsController.createPermission);
 
     // Route for getting all permissions
-    app.get('/permissions/list',authenticate, permissionsController.getPermissions);
+    app.get('/permissions/list', permissionsController.getPermissions);
 
     // Route for getting a specific permission by ID
     app.get('/permissions/:permissionId', authenticate, permissionsController.getPermissionById);
