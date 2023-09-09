@@ -24,18 +24,27 @@ exports.createRole = (req, res, next) => {
     });
 };
 
-exports.getRoles = (req, res, next) => {
-  Role.find()
-    .then(roles => {
-      res.status(200).json({
-        roles
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while fetching the roles.'
-      });
+exports.getRoles =  async(req, res, next) => {
+  try {
+    const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
+
+    const skip = parseInt(offset) * parseInt(limit);
+
+    const list = await Role.find()
+      .skip(skip)
+      .limit(parseInt(limit))
+      .sort({ createdAt: -1 })
+      .populate('permissions');
+
+    const totalCount = await Role.countDocuments(); // Get the total count of documents in the collection
+
+    res.status(200).json({ list, totalCount });
+  } catch (error) {
+    console.error('Error fetching Roles:', error);
+    res.status(500).json({
+      error: 'An error occurred while fetching the Roles.',
     });
+  }
 };
 
 exports.getRoleById = (req, res, next) => {
