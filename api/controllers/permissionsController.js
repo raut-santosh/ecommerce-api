@@ -1,29 +1,47 @@
 const Permission = require('../models/Permission');
 
-exports.createPermission = (req, res, next) => {
-  const { name, alias, category, description, scope } = req.body;
+exports.createPermission = async (req, res, next) => {
+  try {
+    if (req.body._id) {
+      // Update an existing permission
+      const updatedPermission = await Permission.findOneAndUpdate(
+        { _id: req.body._id },
+        req.body,
+        { new: true } // Ensure you get the updated document as the response
+      );
 
-  const permission = new Permission({
-    name,
-    alias,
-    category,
-    description,
-    scope
-  });
+      if (!updatedPermission) {
+        return res.status(404).json({ error: 'Permission not found' });
+      }
 
-  permission.save()
-    .then(savedPermission => {
-      res.status(201).json({
-        message: 'Permission created successfully',
-        permission: savedPermission
+      return res.status(200).json({ permission: updatedPermission });
+    } else {
+      // Create a new permission
+      const { name, alias, category, description, scope } = req.body;
+      const permission = new Permission({
+        name,
+        alias,
+        category,
+        description,
+        scope
       });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while creating the permission.'
+
+      const savedPermission = await permission.save(); // Await the save operation
+
+      return res.status(200).json({
+        permission: savedPermission,
+        message: 'Permission saved successfully'
       });
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'An error occurred while creating/updating the permission.'
     });
+  }
 };
+
+
 
 exports.getPermissions = async (req, res, next) => {
   try {
@@ -34,84 +52,40 @@ exports.getPermissions = async (req, res, next) => {
 
     res.status(200).json({ list, totalCount });
   } catch (error) {
-    console.error('Error fetching Permissions:', error);
     res.status(500).json({
       error: 'An error occurred while fetching the Roles.',
     });
   }
 };
 
-exports.getPermissionById = (req, res, next) => {
-  const permissionId = req.params.permissionId;
-
-  Permission.findById(permissionId)
-    .then(permission => {
-      if (!permission) {
-        return res.status(404).json({
-          message: 'Permission not found'
-        });
-      }
-      res.status(200).json({
-        permission
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while fetching the permission.'
-      });
-    });
+exports.getPermissionById = async (req, res, next) => {
+  try{
+    const permissionId = req.params.permissionId;
+    let permission = await Permission.findById(permissionId);
+    if(permission){
+      return res.status(200).json({ permission : permission });
+    }else{
+      return res.status(403).json({message: 'Permission not found'});
+    }
+  }catch(error){
+    res.status(500).json({message: "An error occurred while fetching the permission."});
+  }
 };
 
-exports.updatePermission = (req, res, next) => {
-  const permissionId = req.params.permissionId;
-  const { name, alias, category, description, scope } = req.body;
 
-  Permission.findByIdAndUpdate(
-    permissionId,
-    {
-      name,
-      alias,
-      category,
-      description,
-      scope
-    },
-    { new: true }
-  )
-    .then(updatedPermission => {
-      if (!updatedPermission) {
-        return res.status(404).json({
-          message: 'Permission not found'
-        });
-      }
-      res.status(200).json({
-        message: 'Permission updated successfully',
-        permission: updatedPermission
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while updating the permission.'
-      });
+exports.deletePermission = async (req, res, next) => {
+  try{
+    const permissionId = req.params.permissionId;
+    let permission = await Permission.findOneAndDelete(permissionId);
+    if(permission){
+      return res.status(200).json({permission: permission, message: 'Permission deleted successfully'});
+    }else{
+      return res.status(403).json({message: 'Permission not found'});
+    }
+
+  }catch(error){
+    res.status(500).json({
+      error: 'An error occurred while deleting the permission.'
     });
-};
-
-exports.deletePermission = (req, res, next) => {
-  const permissionId = req.params.permissionId;
-
-  Permission.findByIdAndRemove(permissionId)
-    .then(deletedPermission => {
-      if (!deletedPermission) {
-        return res.status(404).json({
-          message: 'Permission not found'
-        });
-      }
-      res.status(200).json({
-        message: 'Permission deleted successfully'
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while deleting the permission.'
-      });
-    });
+  }
 };

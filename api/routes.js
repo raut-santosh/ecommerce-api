@@ -76,19 +76,19 @@ module.exports = function (app) {
     app.delete('/role/:roleId', roleController.deleteRole);
 
     // Route for creating a new permission
-    app.post('/permissions/addedit',authenticate, permissionsController.createPermission);
+    app.post('/permissions/addedit', permissionsController.createPermission);
 
     // Route for getting all permissions
     app.get('/permissions/list', permissionsController.getPermissions);
 
     // Route for getting a specific permission by ID
-    app.get('/permissions/:permissionId', authenticate, permissionsController.getPermissionById);
+    app.get('/permissions/:permissionId', permissionsController.getPermissionById);
 
     // Route for updating a permission by ID
-    app.patch('/permissions/:permissionId', authenticate, permissionsController.updatePermission);
+    // app.patch('/permissions/:permissionId', authenticate, permissionsController.updatePermission);
 
     // Route for deleting a permission by ID
-    app.delete('/permissions/:permissionId', authenticate, permissionsController.deletePermission);
+    app.delete('/permissions/:permissionId', permissionsController.deletePermission);
 
     // Route for creating a new order
     app.post('/orders/addedit', authenticate, orderController.createOrder);
