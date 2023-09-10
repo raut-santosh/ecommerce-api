@@ -71,8 +71,8 @@ module.exports = function (app) {
 
     app.post('/roles/addedit', roleController.createRole);
     app.get('/roles/list', roleController.getRoles);
-    app.get('/roles/:roleId', roleController.getRoleById);
-    app.put('/roles/:roleId', authenticate, roleController.updateRole);
+    app.get('/role/:roleId', roleController.getRoleById);
+    app.put('/role/:roleId', authenticate, roleController.updateRole);
     app.delete('/roles/:roleId',authenticate, roleController.deleteRole);
 
     // Route for creating a new permission

@@ -47,25 +47,22 @@ exports.getRoles =  async(req, res, next) => {
   }
 };
 
-exports.getRoleById = (req, res, next) => {
-  const roleId = req.params.roleId;
+exports.getRoleById = async (req, res, next) => {
+  try {
+    const roleId = req.params.roleId;
+    const role = await Role.findOne({ _id: roleId });
 
-  Role.findById(roleId)
-    .then(role => {
-      if (!role) {
-        return res.status(404).json({
-          message: 'Role not found'
-        });
-      }
-      res.status(200).json({
-        role
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while fetching the role.'
-      });
+    if (role) {
+      res.status(200).json({ role });
+    } else {
+      res.status(404).json({ error: 'Role not found' });
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: 'An error occurred while fetching the role.'
     });
+  }
+  
 };
 
 exports.updateRole = (req, res, next) => {

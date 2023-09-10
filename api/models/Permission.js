@@ -8,6 +8,7 @@ const permissionSchema = new mongoose.Schema({
   category: { type: String, lowercase: true },
   description: { type: String },
   scope: { type: String, default: 'tenant' },
+  is_active: { type: Boolean, default:false}
 }, {timestamps: true});
 
 permissionSchema.pre('save', async function (next) {
