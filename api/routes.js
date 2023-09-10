@@ -69,11 +69,11 @@ module.exports = function (app) {
     // Route for deleting a user by ID
     app.delete('/users/:userId', authenticate, userController.deleteUser);
 
-    app.post('/roles/addedit', roleController.createRole);
+    app.post('/role/addedit', roleController.addedit);
     app.get('/roles/list', roleController.getRoles);
     app.get('/role/:roleId', roleController.getRoleById);
-    app.put('/role/:roleId', authenticate, roleController.updateRole);
-    app.delete('/roles/:roleId',authenticate, roleController.deleteRole);
+    // app.put('/role/:roleId', roleController.updateRole);
+    app.delete('/role/:roleId', roleController.deleteRole);
 
     // Route for creating a new permission
     app.post('/permissions/addedit',authenticate, permissionsController.createPermission);

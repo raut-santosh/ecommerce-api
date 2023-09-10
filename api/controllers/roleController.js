@@ -1,27 +1,26 @@
 const Role = require('../models/Role');
 const Permission = require('../models/Permission');
 
-exports.createRole = (req, res, next) => {
-  const { name, alias, permissions } = req.body;
-
-  const role = new Role({
-    name,
-    alias,
-    permissions
-  });
-
-  role.save()
-    .then(savedRole => {
-      res.status(201).json({
-        message: 'Role created successfully',
-        role: savedRole
+exports.addedit = async (req, res, next) => {
+  try{
+    if(req.body._id){
+      let role = await Role.findOneAndUpdate({_id:req.body._id},req.body);
+      return res.status(200).json({role:role})
+    }else{
+      const { name, alias, permissions } = req.body;
+      const role = new Role({
+        name,
+        alias,
+        permissions
       });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while creating the role.'
-      });
+      role.save();
+      return res.status(200).json({role: role, message: 'Role created successfully'});
+    }
+  }catch(error){
+    res.status(500).json({
+      error: 'An error occurred while creating the role.'
     });
+  }
 };
 
 exports.getRoles =  async(req, res, next) => {
@@ -65,54 +64,16 @@ exports.getRoleById = async (req, res, next) => {
   
 };
 
-exports.updateRole = (req, res, next) => {
-  const roleId = req.params.roleId;
-  const { name, permissions } = req.body;
 
-  Role.findByIdAndUpdate(
-    roleId,
-    {
-      name,
-      alias,
-      permissions
-    },
-    { new: true }
-  )
-    .then(updatedRole => {
-      if (!updatedRole) {
-        return res.status(404).json({
-          message: 'Role not found'
-        });
-      }
-      res.status(200).json({
-        message: 'Role updated successfully',
-        role: updatedRole
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while updating the role.'
-      });
+exports.deleteRole = async (req, res, next) => {
+  try{
+    console.log('Deleting')
+    const roleId = req.params.roleId;
+    let role = await Role.findOneAndDelete({_id: roleId});
+    res.status(200).json({role: role, message: "Role deleted successfully"});
+  }catch(error){
+    res.status(500).json({
+      error: 'An error occurred while deleting the role.'
     });
-};
-
-exports.deleteRole = (req, res, next) => {
-  const roleId = req.params.roleId;
-
-  Role.findByIdAndRemove(roleId)
-    .then(deletedRole => {
-      if (!deletedRole) {
-        return res.status(404).json({
-          message: 'Role not found'
-        });
-      }
-      res.status(200).json({
-        message: 'Role deleted successfully'
-      });
-    })
-    .catch(error => {
-      res.status(500).json({
-        error: 'An error occurred while deleting the role.'
-      });
-    });
+  }
 };
