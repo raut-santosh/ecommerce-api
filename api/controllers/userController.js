@@ -29,10 +29,17 @@ exports.createUser = (req, res, next) => {
   
   exports.getAllUsers = async (req, res, next) => {
     try {
-      const users = await User.find();
-  
+      const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
+      const skip = parseInt(offset) * parseInt(limit);
+      const list = await User.find().populate('role').skip(skip).limit(parseInt(limit)).sort({createdAt: -1});
+      const totalCount = await User.countDocuments(); // Get the total count of documents in the collection
+
+      if(!list){
+        return res.status(200).json({message: 'No users found'})
+      }
       res.status(200).json({
-        users
+        list,
+        totalCount
       });
     } catch (error) {
       res.status(500).json({

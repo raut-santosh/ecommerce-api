@@ -126,7 +126,6 @@ exports.getAllProducts = async (req, res, next) => {
 
     res.status(200).json({ data, totalCount });
   } catch (error) {
-    console.error('Error fetching products:', error);
     res.status(500).json({
       error: 'An error occurred while fetching the products.',
     });

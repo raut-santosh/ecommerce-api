@@ -58,7 +58,7 @@ module.exports = function (app) {
     app.post('/users/addedit',authenticate, userController.createUser);
 
     // Route for getting all users
-    app.get('/users/list', authenticate, userController.getAllUsers);
+    app.get('/users/list', userController.getAllUsers);
 
     // Route for getting a specific user by ID
     app.get('/users/:userId', userController.getUserById);
