@@ -1,29 +1,32 @@
 const User = require('../models/User');
-exports.createUser = (req, res, next) => {
+
+exports.createUser = async (req, res, next) => {
+  try{
+    if(req.body._id){
+      console.log('working',req.body)
+      let user = await User.findOneAndUpdate({_id:req.body._id}, req.body);
+      if(!user){
+        return res.status(404).json({message: 'User not found'});
+      }
+      return res.status(200).json({user: user, message: 'User updated successfully'});
+    }
     const { name, email, mobile, password, role, wishlist, addresses } = req.body;
     const user = new User({
-        name,
-        email,
-        mobile,
-        password,
-        role,
-        wishlist,
-        addresses
+      name,
+      email,
+      mobile,
+      password,
+      role,
+      wishlist,
+      addresses
     });
-    
-    user.save()
-    .then(savedUser => {
-        console.log(user);
-            res.status(201).json({
-                message: 'User created successfully',
-                user: savedUser
-            });
-        })
-        .catch(error => {
-            res.status(500).json({
-                error: 'An error occurred while creating the user.'
-            });
-        });
+    user.save();
+    return res.status(200).json({user: user, message: 'User created successfully'});
+  }catch(error){
+    res.status(500).json({
+      error: 'An error occurred while creating the user.'
+    });
+  }
 };
 
   
@@ -51,7 +54,7 @@ exports.createUser = (req, res, next) => {
   exports.getUserById = async (req, res, next) => {
     try {
       const userId = req.params.userId;
-      const user = await User.findById(userId);
+      const user = await User.findById(userId).populate('role');
       if (!user) {
         return res.status(404).json({
           message: 'User not found'
@@ -107,7 +110,8 @@ exports.createUser = (req, res, next) => {
     try {
       const userId = req.params.userId;
       const deletedUser = await User.findByIdAndRemove(userId);
-  
+      console.log('working')
+
       if (!deletedUser) {
         return res.status(404).json({
           message: 'User not found'
@@ -115,7 +119,8 @@ exports.createUser = (req, res, next) => {
       }
   
       res.status(200).json({
-        message: 'User deleted successfully'
+        message: 'User deleted successfully',
+        user: deleteUser
       });
     } catch (error) {
       res.status(500).json({

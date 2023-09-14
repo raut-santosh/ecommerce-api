@@ -55,19 +55,19 @@ module.exports = function (app) {
     app.delete('/products/delete/:productId',authenticate, productController.deleteProduct);
 
     // Route for creating a new user
-    app.post('/users/addedit',authenticate, userController.createUser);
+    app.post('/user/addedit', userController.createUser);
 
     // Route for getting all users
     app.get('/users/list', userController.getAllUsers);
 
     // Route for getting a specific user by ID
-    app.get('/users/:userId', userController.getUserById);
+    app.get('/user/:userId', userController.getUserById);
 
     // Route for updating a user by ID
-    app.put('/users/:userId', authenticate, userController.updateUser);
+    // app.put('/users/:userId', authenticate, userController.updateUser);
 
     // Route for deleting a user by ID
-    app.delete('/users/:userId', authenticate, userController.deleteUser);
+    app.delete('/user/:userId', userController.deleteUser);
 
     app.post('/role/addedit', roleController.addedit);
     app.get('/roles/list', roleController.getRoles);
