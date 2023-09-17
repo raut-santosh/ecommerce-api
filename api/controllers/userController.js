@@ -1,55 +1,58 @@
 const User = require('../models/User');
 
-exports.createUser = async (req, res, next) => {
-  try{
-    if(req.body._id){
-      console.log('working',req.body)
-      let user = await User.findOneAndUpdate({_id:req.body._id}, req.body);
-      if(!user){
-        return res.status(404).json({message: 'User not found'});
+exports.addeditUser = async (req, res, next) => {
+  try {
+    if (req.body._id) {
+      const user = await User.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
       }
-      return res.status(200).json({user: user, message: 'User updated successfully'});
+      return res.status(200).json({ user, message: 'User updated successfully' });
+    } else {
+      const { name, email, mobile, password, role } = req.body;
+      const user = new User({
+        name,
+        email,
+        mobile,
+        password,
+        role,
+      });
+      await user.save(); // Make sure to await the save operation
+      return res.status(200).json({ user, message: 'User created successfully' });
     }
-    const { name, email, mobile, password, role, wishlist, addresses } = req.body;
-    const user = new User({
-      name,
-      email,
-      mobile,
-      password,
-      role,
-      wishlist,
-      addresses
-    });
-    user.save();
-    return res.status(200).json({user: user, message: 'User created successfully'});
-  }catch(error){
+  } catch (error) {
+    console.error(error); // Log the error for debugging
     res.status(500).json({
-      error: 'An error occurred while creating the user.'
+      error: 'An error occurred while creating/updating the user.',
     });
   }
 };
 
-  
-  exports.getAllUsers = async (req, res, next) => {
-    try {
-      const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
-      const skip = parseInt(offset) * parseInt(limit);
-      const list = await User.find().populate('role').skip(skip).limit(parseInt(limit)).sort({createdAt: -1});
-      const totalCount = await User.countDocuments(); // Get the total count of documents in the collection
 
-      if(!list){
-        return res.status(200).json({message: 'No users found'})
-      }
-      res.status(200).json({
-        list,
-        totalCount
-      });
-    } catch (error) {
-      res.status(500).json({
-        error: 'An error occurred while fetching the users.'
-      });
+  
+exports.getAllUsers = async (req, res, next) => {
+  try {
+    const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
+    const skip = parseInt(offset) * parseInt(limit);
+    const list = await User.find().populate('role').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
+    const totalCount = await User.countDocuments();
+
+    if (list.length === 0) { 
+      return res.status(200).json({ message: 'No users found' });
     }
-  };
+
+    res.status(200).json({
+      list,
+      totalCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      error: 'An error occurred while fetching the users.',
+    });
+  }
+};
+
   
   exports.getUserById = async (req, res, next) => {
     try {
@@ -120,7 +123,7 @@ exports.createUser = async (req, res, next) => {
   
       res.status(200).json({
         message: 'User deleted successfully',
-        user: deleteUser
+        user: deletedUser
       });
     } catch (error) {
       res.status(500).json({
