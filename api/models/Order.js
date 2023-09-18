@@ -4,12 +4,8 @@ const Counter = require('./Counter');
 const orderSchema = new mongoose.Schema({
   idseq: { type: Number, unique: true },
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  products: [
-    {
-      product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-      quantity: { type: Number, required: true },
-    },
-  ],
+  products: [{}],
+  quantity: { type: Number, required: true },
   totalPrice: { type: Number, required: true },
   address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
   status: {

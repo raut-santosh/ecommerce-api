@@ -44,15 +44,15 @@ module.exports = function (app) {
     app.post('/upload/file', authenticate, fileController.uploadFile);
 
     // Route for creating a new product
-    app.post('/products/addedit', authenticate, productController.createProduct);
+    app.post('/products/addedit', productController.addeditProduct);
 
     // Route for getting all products
     app.get('/products/list', productController.getAllProducts);
 
     // Route for getting a specific product by ID
-    app.get('/products/addedit/:productId', productController.getProductById);
+    app.get('/product/:productId', productController.getProductById);
 
-    app.delete('/products/delete/:productId',authenticate, productController.deleteProduct);
+    app.delete('/product/:productId', productController.deleteProduct);
 
     // Route for creating a new user
     app.post('/user/addedit', userController.addeditUser);
@@ -91,7 +91,7 @@ module.exports = function (app) {
     app.post('/orders/addedit', authenticate, orderController.createOrder);
 
     // Route for getting all orders
-    app.get('/orders/list', authenticate, orderController.getAllOrders);
+    app.get('/orders/list',  orderController.getAllOrders);
 
     // Route for getting a specific order by ID
     app.get('/orders/:orderId', authenticate, orderController.getOrderById);

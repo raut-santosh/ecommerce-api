@@ -1,30 +1,32 @@
 const Product = require('../models/Product');
 
-exports.createProduct = async (req, res, next) => {
+exports.addeditProduct = async (req, res, next) => {
   try {
-    const { name, description, price, category, images, tags, stock } = req.body;
-    const product = new Product({
-      name,
-      description,
-      price,
-      images,
-      category,
-      tags,
-      stock
-    });
-    console.log(product);
+    if(req.body._id){
+      let product = await Product.findOneAndUpdate({_id:req.body._id},req.body);
+      if(!product){
+        return res.status(404).json({message: 'Product not found'});
+      }else{
+        return res.status(200).json({message:'Product updated successfully', product: product});
+      }
+    }else{
+      const { name, description, price, category, images, tags, stock } = req.body;
+      const product = new Product({
+        name,
+        description,
+        price,
+        images,
+        category,
+        tags,
+        stock
+      });
+      console.log(product);
+      product.save();
+      if(product){
+        res.status(200).json({ product: product, message:'Product added successfully' });
+      }
+    }
     
-    product.save().then((savedProduct) => { // Save the product and use the saved product in the callback
-      console.log('Creating Product');
-      res.status(201).json({
-        message: 'Product created successfully',
-        product: savedProduct
-      });
-    }).catch((error) => {
-      res.status(500).json({
-        error
-      });
-    });
 
   } catch (error) {
     res.status(500).json({
@@ -52,41 +54,6 @@ exports.getProductById = async (req, res, next) => {
   }
 };
 
-exports.updateProduct = async (req, res, next) => {
-  try {
-    const productId = req.params.productId;
-    const { name, description, price, category, stock, images } = req.body;
-
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      {
-        name,
-        description,
-        price,
-        images, 
-        category,
-        tags,
-        stock
-      },
-      { new: true }
-    );
-
-    if (!updatedProduct) {
-      return res.status(404).json({
-        message: 'Product not found'
-      });
-    }
-
-    res.status(200).json({
-      message: 'Product updated successfully',
-      product: updatedProduct
-    });
-  } catch (error) {
-    res.status(500).json({
-      error: 'An error occurred while updating the product.'
-    });
-  }
-};
 
 
 exports.deleteProduct = async (req, res, next) => {
@@ -117,7 +84,7 @@ exports.getAllProducts = async (req, res, next) => {
 
     const skip = parseInt(offset) * parseInt(limit);
 
-    const data = await Product.find()
+    const data = await Product.find().populate('images')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });

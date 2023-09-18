@@ -25,14 +25,31 @@ exports.createOrder = async (req, res, next) => {
 
 exports.getAllOrders = async (req, res, next) => {
   try {
-    const orders = await Order.find();
+    const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
+    const skip = parseInt(offset) * parseInt(limit);
+    let conditionarray = [{}];
+    if (req.query.searchbyrole !== 'null' && req.query.searchbyrole !== undefined) {
+      const roleId = req.query.searchbyrole;
+      conditionarray.push({ role: roleId });
+    }
+    
+    
+    const query = { $and: conditionarray };
+    const list = await Order.find(query).populate('user').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
+    const totalCount = await Order.countDocuments(query);
+
+    if (list.length === 0) { 
+      return res.status(200).json({ message: 'No orders found' });
+    }
 
     res.status(200).json({
-      orders
+      list,
+      totalCount,
     });
   } catch (error) {
+    console.error(error);
     res.status(500).json({
-      error: 'An error occurred while fetching the orders.'
+      error: 'An error occurred while fetching the orders.',
     });
   }
 };

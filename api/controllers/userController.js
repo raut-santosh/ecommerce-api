@@ -36,7 +36,7 @@ exports.getAllUsers = async (req, res, next) => {
     const skip = parseInt(offset) * parseInt(limit);
     let conditionarray = [{}];
     console.log(typeof req.query.searchbyrole)
-    if (req.query.searchbyrole !== 'null') {
+    if (req.query.searchbyrole !== 'null' && req.query.searchbyrole !== undefined) {
       const roleId = req.query.searchbyrole;
       conditionarray.push({ role: roleId });
     }
