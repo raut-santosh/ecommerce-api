@@ -34,8 +34,14 @@ exports.getAllUsers = async (req, res, next) => {
   try {
     const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
     const skip = parseInt(offset) * parseInt(limit);
-    const list = await User.find().populate('role').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
-    const totalCount = await User.countDocuments();
+    let conditionarray = [{}];
+    if(req.query.searchbyrole){
+      const roleId = req.query.searchbyrole;
+      conditionarray.push({ role: roleId });
+    }
+    const query = { $and: conditionarray };
+    const list = await User.find(query).populate('role').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
+    const totalCount = await User.countDocuments(query);
 
     if (list.length === 0) { 
       return res.status(200).json({ message: 'No users found' });
