@@ -35,10 +35,13 @@ exports.getAllUsers = async (req, res, next) => {
     const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
     const skip = parseInt(offset) * parseInt(limit);
     let conditionarray = [{}];
-    if(req.query.searchbyrole){
+    console.log(typeof req.query.searchbyrole)
+    if (req.query.searchbyrole !== 'null') {
       const roleId = req.query.searchbyrole;
       conditionarray.push({ role: roleId });
     }
+    
+    
     const query = { $and: conditionarray };
     const list = await User.find(query).populate('role').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
     const totalCount = await User.countDocuments(query);
