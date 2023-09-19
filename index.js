@@ -23,7 +23,7 @@ mongoose
 app.use(morgan("dev"));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-app.use("/upload/file", express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 
 // Import your route setup
 const routes = require("./api/routes")(app);

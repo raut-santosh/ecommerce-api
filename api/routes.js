@@ -41,7 +41,7 @@ module.exports = function (app) {
     app.post('/change-password/:userId', authenticate, authController.changePassword);
 
     // Route for uploading files
-    app.post('/upload/file', authenticate, fileController.uploadFile);
+    app.post('/upload/file',  fileController.uploadFile);
 
     // Route for creating a new product
     app.post('/products/addedit', productController.addeditProduct);
