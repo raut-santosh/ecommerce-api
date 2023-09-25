@@ -29,7 +29,7 @@ app.use("/uploads", express.static("uploads"));
 const routes = require("./api/routes")(app);
 
 // File upload endpoint using multer
-app.post("/upload/file", multer().single("file"), (req, res) => {
+app.post("/upload", multer().single("file"), (req, res) => {
   // Handle file upload here
   res.status(201).json({
     message: 'File uploaded successfully',

@@ -31,7 +31,6 @@ exports.uploadFile = async (req, res, next) => {
         console.log(req.body);
       const { originalname, path, mimetype, size } = req.file;
       const { alias } = req.body; // Alias sent from the frontend
-
       const file = new File({
         name: originalname,
         alias: alias, // Store the alias in the database
