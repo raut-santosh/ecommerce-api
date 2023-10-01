@@ -15,39 +15,44 @@ const storage = multer.diskStorage({
 // Initialize multer with storage configuration
 const upload = multer({ storage: storage });
 
-// Middleware to handle file uploads
-const uploadMiddleware = upload.single('file');
+// Middleware to handle file uploads (updated to allow multiple files)
+const uploadMiddleware = upload.array('files', 5); // Allow up to 5 files
 
-// Controller to upload a file and associate with a provided alias
-exports.uploadFile = async (req, res, next) => {
+// Controller to upload multiple files and associate them with provided aliases
+exports.uploadFiles = async (req, res, next) => {
   uploadMiddleware(req, res, async (err) => {
     if (err) {
       return res.status(500).json({
-        error: 'An error occurred while uploading the file.'
+        error: 'An error occurred while uploading the files.'
       });
     }
 
     try {
-        console.log(req.body);
-      const { originalname, path, mimetype, size } = req.file;
-      const { alias } = req.body; // Alias sent from the frontend
-      const file = new File({
-        name: originalname,
-        alias: alias, // Store the alias in the database
-        path,
-        type: mimetype,
-        size,
-        is_active: true,
-      });
+      const filesData = [];
 
-      const savedFile = await file.save();
+      for (const uploadedFile of req.files) {
+        const { originalname, path, mimetype, size } = uploadedFile;
+        const { alias } = req.body; // Alias sent from the frontend
+
+        const file = new File({
+          name: originalname,
+          alias: alias, // Store the alias in the database
+          path,
+          type: mimetype,
+          size,
+          is_active: true,
+        });
+
+        const savedFile = await file.save();
+        filesData.push(savedFile);
+      }
 
       res.status(201).json({
-        file: savedFile
+        files: filesData
       });
     } catch (error) {
       res.status(500).json({
-        error: 'An error occurred while uploading the file.'
+        error: 'An error occurred while uploading the files.'
       });
     }
   });
