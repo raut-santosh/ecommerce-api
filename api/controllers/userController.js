@@ -1,27 +1,80 @@
 const User = require('../models/User');
+const Address = require('../models/Address');
 
 exports.addeditUser = async (req, res, next) => {
   try {
-    if (req.body._id) {
-      const user = await User.findOneAndUpdate({ _id: req.body._id }, req.body, { new: true });
+    const { _id, name, email, mobile, password, role, addresses } = req.body;
+
+    // Function to handle address creation/update
+    async function handleAddresses(addressData) {
+      const updatedAddresses = [];
+      for (const address of addressData) {
+        if (address._id) {
+          // If address has an _id, update it
+          const updatedAddress = await Address.findOneAndUpdate(
+            { _id: address._id },
+            { $set: address },
+            { new: true }
+          );
+          updatedAddresses.push(updatedAddress);
+        } else {
+          // If address doesn't have an _id, create a new one
+          const tempAddress = new Address(address);
+          await tempAddress.save();
+          updatedAddresses.push(tempAddress);
+        }
+      }
+      return updatedAddresses;
+    }
+
+    // Check if _id is provided for user
+    if (_id) {
+      // Update existing user
+      const updatedAddresses = await handleAddresses(addresses);
+
+      const user = await User.findOneAndUpdate(
+        { _id },
+        {
+          $set: {
+            name,
+            email,
+            mobile,
+            password,
+            role,
+            addresses: updatedAddresses.map((address) => address._id),
+          },
+        },
+        { new: true }
+      );
+
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
+
       return res.status(200).json({ user, message: 'User updated successfully' });
     } else {
-      const { name, email, mobile, password, role } = req.body;
+      // Create a new user
+      if (!addresses || addresses.length === 0) {
+        return res.status(400).json({ message: 'Please provide at least one address' });
+      }
+
+      const newAddresses = await handleAddresses(addresses);
+
       const user = new User({
         name,
         email,
         mobile,
         password,
         role,
+        addresses: newAddresses.map((address) => address._id),
       });
-      await user.save(); // Make sure to await the save operation
+
+      await user.save();
+
       return res.status(200).json({ user, message: 'User created successfully' });
     }
   } catch (error) {
-    console.error(error); // Log the error for debugging
+    console.error(error);
     res.status(500).json({
       error: 'An error occurred while creating/updating the user.',
     });
@@ -43,7 +96,7 @@ exports.getAllUsers = async (req, res, next) => {
     
     
     const query = { $and: conditionarray };
-    const list = await User.find(query).populate('role').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
+    const list = await User.find(query).populate('role').populate('addresses').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
     const totalCount = await User.countDocuments(query);
 
     if (list.length === 0) { 
@@ -66,7 +119,7 @@ exports.getAllUsers = async (req, res, next) => {
   exports.getUserById = async (req, res, next) => {
     try {
       const userId = req.params.userId;
-      const user = await User.findById(userId).populate('role');
+      const user = await User.findById(userId).populate('role').populate('addresses');
       if (!user) {
         return res.status(404).json({
           message: 'User not found'
