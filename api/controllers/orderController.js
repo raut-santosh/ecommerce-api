@@ -1,27 +1,52 @@
 const Order = require('../models/Order');
+const Product = require('../models/Product');
 
 exports.createOrder = async (req, res, next) => {
   try {
-    const { user, products, totalPrice, address } = req.body;
+    const { customer, products, address } = req.body;
+    let totalPrice = 0;
+
+    // Fetch all product prices concurrently
+    const productPromises = products.map(async (productObj) => {
+      const product = await Product.findOne({ _id: productObj.product });
+      if (product) {
+        return product.price * productObj.quantity;
+      }
+      return 0; // Return 0 if the product is not found
+    });
+
+    const productPrices = await Promise.all(productPromises);
+
+    // Calculate the total price
+    totalPrice = productPrices.reduce((acc, price) => acc + price, 0);
+    let totalQuantity=0;
+    products.forEach((product) => {
+      console.log(product);
+      totalQuantity += product.quantity;
+    })
+
     const order = new Order({
-      user,
+      customer,
       products,
       totalPrice,
       address,
+      totalQuantity,
+      createdBy: req.currentUser.userId
     });
 
     const savedOrder = await order.save();
 
     res.status(201).json({
       message: 'Order created successfully',
-      order: savedOrder
+      order: savedOrder,
     });
   } catch (error) {
     res.status(500).json({
-      error: 'An error occurred while creating the order.'
+      error: 'An error occurred while creating the order.',
     });
   }
 };
+
 
 exports.getAllOrders = async (req, res, next) => {
   try {
@@ -35,7 +60,7 @@ exports.getAllOrders = async (req, res, next) => {
     
     
     const query = { $and: conditionarray };
-    const list = await Order.find(query).populate('user').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
+    const list = await Order.find(query).populate('customer').populate('address').populate('products.product').skip(skip).limit(parseInt(limit)).sort({ createdAt: -1 });
     const totalCount = await Order.countDocuments(query);
 
     if (list.length === 0) { 
@@ -57,7 +82,7 @@ exports.getAllOrders = async (req, res, next) => {
 exports.getOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.orderId;
-    const order = await Order.findById(orderId);
+    const order = await Order.findById(orderId).populate('address');
     if (!order) {
       return res.status(404).json({
         message: 'Order not found'

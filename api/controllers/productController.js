@@ -11,6 +11,7 @@ exports.addeditProduct = async (req, res, next) => {
       }
     }else{
       const { name, description, price, category, images, tags, stock } = req.body;
+
       const product = new Product({
         name,
         description,
@@ -18,7 +19,8 @@ exports.addeditProduct = async (req, res, next) => {
         images,
         category,
         tags,
-        stock
+        stock,
+        createdBy: req.currentUser.userId
       });
       console.log(product);
       product.save();
@@ -38,7 +40,7 @@ exports.addeditProduct = async (req, res, next) => {
 exports.getProductById = async (req, res, next) => {
   try {
     const productId = req.params.productId;
-    const product = await Product.findById(productId);
+    const product = await Product.findById(productId).populate('createdBy').populate('images');
     if (!product) {
       return res.status(404).json({
         message: 'Product not found'
@@ -80,16 +82,32 @@ exports.deleteProduct = async (req, res, next) => {
 
 exports.getAllProducts = async (req, res, next) => {
   try {
-    const { offset = 0, limit = process.env.PAGINATION_LIMIT } = req.query;
-
+    console.log('products',req.query)
+    const { offset = 0, limit = process.env.PAGINATION_LIMIT, search } = req.query;
     const skip = parseInt(offset) * parseInt(limit);
 
-    const data = await Product.find().populate('images')
+    // Create a filter to support searching
+    const filter = {};
+    if (search) {
+      if(search !== 'undefined'){
+        filter.$or = [
+          { name: { $regex: search, $options: 'i' } }, // Case-insensitive search on the 'name' field
+          // { description: { $regex: search, $options: 'i' } }, // Case-insensitive search on the 'description' field
+          { category: { $regex: search, $options: 'i' } }
+        ];
+      }
+    }
+
+    // Query the products collection with search and pagination
+    const data = await Product.find(filter)
+      .populate('images')
+      .populate('createdBy')
       .skip(skip)
       .limit(parseInt(limit))
       .sort({ createdAt: -1 });
 
-    const totalCount = await Product.countDocuments(); // Get the total count of documents in the collection
+    // Get the total count of documents that match the search criteria
+    const totalCount = await Product.countDocuments(filter);
 
     res.status(200).json({ data, totalCount });
   } catch (error) {
@@ -98,4 +116,5 @@ exports.getAllProducts = async (req, res, next) => {
     });
   }
 };
+
 

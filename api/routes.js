@@ -8,6 +8,7 @@ const reviewController = require('./controllers/reviewController');
 const authController = require('./controllers/authController');
 const authenticate = require('./middlewares/authentication');
 const mailer = require('./middlewares/mailer');
+const addressController = require('./controllers/addressController');
 
 module.exports = function (app) {
     // Handling cors errors (middleware)
@@ -25,7 +26,7 @@ module.exports = function (app) {
     });
 
         // Default route
-    app.get('/', (req, res, next) => {
+    app.get('/', authenticate, (req, res, next) => {
         res.status(200).json({'msg':'hello world!'});
     });
 
@@ -44,7 +45,7 @@ module.exports = function (app) {
     app.post('/upload/files',  fileController.uploadFiles);
 
     // Route for creating a new product
-    app.post('/products/addedit', productController.addeditProduct);
+    app.post('/products/addedit', authenticate, productController.addeditProduct);
 
     // Route for getting all products
     app.get('/products/list', productController.getAllProducts);
@@ -65,6 +66,11 @@ module.exports = function (app) {
 
     // Route for deleting a user by ID
     app.delete('/user/:userId', userController.deleteUser);
+
+    app.post('/address/addedit', addressController.addEditAddress);
+    app.get('/address/list', addressController.getAddressList);
+    app.get('/address/:addressId', addressController.getAddressById);
+    app.delete('/address/:addressId', addressController.deleteAddress);
 
     app.post('/role/addedit', roleController.addedit);
     app.get('/roles/list', roleController.getRoles);
@@ -88,13 +94,13 @@ module.exports = function (app) {
     app.delete('/permissions/:permissionId', permissionsController.deletePermission);
 
     // Route for creating a new order
-    app.post('/orders/addedit', authenticate, orderController.createOrder);
+    app.post('/order/addedit', orderController.createOrder);
 
     // Route for getting all orders
     app.get('/orders/list',  orderController.getAllOrders);
 
     // Route for getting a specific order by ID
-    app.get('/orders/:orderId', authenticate, orderController.getOrderById);
+    app.get('/orders/:orderId', orderController.getOrderById);
 
     // Route for updating order status
     app.patch('/orders/:orderId/status', authenticate, orderController.updateOrderStatus);

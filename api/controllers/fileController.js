@@ -32,7 +32,7 @@ exports.uploadFiles = async (req, res, next) => {
 
       for (const uploadedFile of req.files) {
         const { originalname, path, mimetype, size } = uploadedFile;
-        const { alias } = req.body; // Alias sent from the frontend
+        const { alias='profile' } = req.body; // Alias sent from the frontend
 
         const file = new File({
           name: originalname,
